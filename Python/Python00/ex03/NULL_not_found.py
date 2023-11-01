@@ -4,7 +4,7 @@ def isNaN(num):
 def NULL_not_found(object: any) -> int:
 	value=object
 	info = type(object)
-	if type(object) is None:
+	if object is None:
 		print(f"Nothing: None {info}")
 	elif type(object) is float and isNaN(value):
 		print(f"Cheese: {value} {info}")
