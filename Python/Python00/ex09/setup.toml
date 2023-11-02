@@ -1,0 +1,10 @@
+[project]
+name = "ft_package"
+version = "0.0.1"
+authors = [
+  { name="nlesage", email="nlesage@42.fr" },
+]
+description = "A sample test package"
+readme = "README.md"
+
+requires = [""]

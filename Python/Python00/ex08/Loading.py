@@ -2,6 +2,7 @@ import os
 
 
 def ft_tqdm(lst: range) -> None:
+    """function that creates a progress bar"""
     size = os.get_terminal_size()
     diff = 0
     if (lst.stop > 99):
