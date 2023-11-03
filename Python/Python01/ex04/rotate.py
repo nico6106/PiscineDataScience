@@ -24,10 +24,16 @@ def zoom(img: np.ndarray):
     """return an img afer zoom"""
     x = len(img[0])
     y = len(img)
-    sixe_x = int(np.trunc(x * ZOOM_IMG))
-    size_y = int(np.trunc(y * ZOOM_IMG))
-    start_x = max(0, x // 2 - sixe_x // 2)
-    start_y = max(0, y // 2 - size_y // 2)
+    # sixe_x = int(np.trunc(x * ZOOM_IMG))
+    # size_y = int(np.trunc(y * ZOOM_IMG))
+    # start_x = max(0, x // 2 - sixe_x // 2)
+    # start_y = max(0, y // 2 - size_y // 2)
+    # sixe_x = sixe_x + start_x
+    # size_y = size_y + start_y
+    sixe_x = 400
+    size_y = 400
+    start_x = max(0, x // 2 - sixe_x // 2 - 50)
+    start_y = max(0, y // 2 - size_y // 2 + 300)
     sixe_x = sixe_x + start_x
     size_y = size_y + start_y
     newimg = img[start_x:sixe_x, start_y:size_y]
