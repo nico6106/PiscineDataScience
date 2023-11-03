@@ -1,8 +1,6 @@
 from load_image import ft_load
-# from PIL import Image
 from matplotlib import pyplot as plt
 import numpy as np
-# import cv2
 
 
 ZOOM_IMG = 0.6
@@ -19,18 +17,6 @@ def convert_grey(img: np.ndarray):
     """convert an image to a gray scale"""
     coefficients = np.array([0.299, 0.587, 0.114]).reshape(3, 1)
     newimg = np.dot(img[:, :, :], coefficients).round().astype(np.uint8)
-    # methode PIL
-    # newimg = Image.fromarray(newimg)
-    # newimg = newimg.convert("L")
-    # newimg = np.array(newimg)
-    # methode CV2
-    # newimg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # methode calcul mano
-    # newimg = np.zeros((len(img), len(img[0]), 1), dtype=np.uint16)
-    # for y in range(len(img)):
-    #     for x in range(len(img[0])):
-    #         average = (img[y, x, 0] + img[y, x, 1] + img[y, x, 2]) // 3
-    #         newimg[y][x][0] = average
     return newimg
 
 
@@ -47,19 +33,30 @@ def zoom(img: np.ndarray):
     newimg = img[start_x:sixe_x, start_y:size_y]
     grayimg = convert_grey(newimg)
     return grayimg
-# np.dot(newimg[:, :, :], [0.299, 0.587, 0.114]).round().astype(np.uint8)
+
+
+def transpose_img(img: np.ndarray):
+    """function that transpose an array given in argument"""
+    array_2d = img[:, :, 0]
+    newimg = np.zeros((len(array_2d[0]), len(array_2d)), dtype=int)
+    for y in range(len(array_2d)):
+        for x in range(len(array_2d[0])):
+            newimg[x][y] = array_2d[y][x]
+    return newimg
 
 
 def main():
     """Main function or the program"""
     try:
         img = ft_load('animal.jpeg')
-        print(img)
         newimg = zoom(img)
-        print(f"New shape after slicing: {np.array(newimg).shape} or \
+        print(f"The shape of image is: {np.array(newimg).shape} or \
 ({len(newimg)}, {len(newimg[0])})")
         print(newimg)
-        show_image(newimg)
+        transposed_img = transpose_img(newimg)
+        print(f"New shape after Transpose: {np.array(transposed_img).shape}")
+        print(transposed_img)
+        show_image(transposed_img)
     except AssertionError as error:
         print(f"{AssertionError.__name__}: {error}")
     return

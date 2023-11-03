@@ -4,3 +4,10 @@ weight = [165.3, 38.4]
 bmi = give_bmi(height, weight)
 print(bmi, type(bmi))
 print(apply_limit(bmi, 26))
+
+height = [5, 2]
+weight = [165.3, 155]
+bmi = give_bmi(height, weight)
+print(bmi, type(bmi))
+bmi = [5, 6, 3, 'tr']
+print(apply_limit(bmi, 26))
