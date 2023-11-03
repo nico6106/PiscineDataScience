@@ -57,13 +57,14 @@ def ft_grey(array) -> np.ndarray:
     """modify an image with a gray scale color"""
     if (array is None):
         return
-    newimg = array[:, :, 2]
+    # newimg = array[:, :, 2]
+    # methode dot
+    newimg = np.dot(array, [0.299, 0.587, 0.114]).round().astype(np.uint8)
+    # method calc
+    # newimg = np.zeros_like(array[:, :, 0])
     # for y in range(len(array)):
     #     for x in range(len(array[0])):
-    #         newimg[y][x][0] = array[y][x][0] / 255
-    #         newimg[y][x][1] = array[y][x][1] / 255
-    #         newimg[y][x][2] = array[y][x][2] / 255
-    # average = array[y][x][0] + array[y][x][1] + array[y][x][2]
-    # newimg[y][x] = average / 3
+    #         average = int((array[y][x][0] + array[y][x][1] + array[y][x][2]) // 3)
+    #         newimg[y][x] = average
     show_image(newimg)
     return
