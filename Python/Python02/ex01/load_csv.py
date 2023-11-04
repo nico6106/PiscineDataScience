@@ -3,7 +3,6 @@ import os
 import pandas as pd
 
 
-
 def load(path: str) -> pd.DataFrame:
     """Function that loads the data from path argument"""
     try:
