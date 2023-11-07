@@ -16,7 +16,7 @@ def format_x(data):
 def show_graph(data_life: pd.DataFrame, data_income: pd.DataFrame):
     """function that plot data"""
     life_1900 = data_life['1900'].values
-    income_1900 = data_income['1900'].values            
+    income_1900 = data_income['1900'].values
     plt.scatter(income_1900, life_1900)
     plt.title('1900')
     plt.xlabel('Gross domestic product')

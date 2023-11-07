@@ -39,7 +39,7 @@ def main():
     """Main function or the program"""
     try:
         data = load("../population_total.csv")
-        if not data is None:
+        if data is not None:
             show_graph(data)
     except AssertionError as error:
         print(f"{AssertionError.__name__}: {error}")
