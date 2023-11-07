@@ -83,21 +83,18 @@ def ft_var(values, show: bool = False):
 
 
 def ft_quartile(values):
-    if not (check_tuple(values)):
+    if not (check_tuple(values)) or len(values) < 3:
         print('ERROR')
         return
     new_values = list(values)
     new_values.sort()
     len_val = len(new_values)
     
-    index = int(len_val / 2)
-    if index % 2 == 0:
-        result = (new_values[index - 1] + new_values[index]) /2
-    else:
-        result = new_values[index]
-    
-    result = 0
-    print(f"quartile : {result}")
+    index = int(len_val / 4)
+    first = float(new_values[index])
+    index = int(len_val / 4) * 3
+    second = float(new_values[index])
+    print(f"quartile : [{first}, {second}]")
 
 
 def ft_statistics(*args: Any, **kwargs: Any) -> None:
