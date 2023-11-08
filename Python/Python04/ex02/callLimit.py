@@ -1,15 +1,21 @@
+from typing import Any
+
+
 def callLimit(limit: int):
+    """decorator that limits a call of a function"""
     count = 0
-    print(f"count={count} limit={limit}")
+
     def callLimiter(function):
-        nonlocal count
-        count = count + 1
-        if (count > limit):
-            print(f"Error: {function.__str__} call too many times")
+        """limiter that return the limit_function"""
+
+        def limit_function(*args: Any, **kwds: Any):
+            """limit function that executes or not the function"""
+            nonlocal count
+            if count < limit:
+                function()
+            else:
+                print(f"Error: {function} call too many times")
+            count = count + 1
             return
-        else:
-            function()
-            print('executed')
-            return
-        # def limit_function(*args: Any, **kwds: Any):
-    return callLimiter()
+        return limit_function
+    return callLimiter

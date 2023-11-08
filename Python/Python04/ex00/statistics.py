@@ -8,7 +8,7 @@ def check_tuple(list) -> bool:
     if len(list) == 0:
         return False
     for elem in list:
-        if not(type(elem) is int or type(elem) is float):
+        if not (type(elem) is int or type(elem) is float):
             return False
     return True
 
@@ -49,10 +49,9 @@ def ft_median(values) -> float:
     len_val = len(new_values)
     index = int(len_val / 2)
     if len(new_values) % 2 == 0:
-        result = (new_values[index - 1] + new_values[index]) /2
+        result = (new_values[index - 1] + new_values[index]) / 2
     else:
         result = new_values[int(len_val / 2)]
-    
     print(f"median : {result}")
     return result
 
@@ -83,13 +82,13 @@ def ft_var(values, show: bool = False):
 
 
 def ft_quartile(values):
+    """compute quartile 25/75"""
     if not (check_tuple(values)) or len(values) < 3:
         print('ERROR')
         return
     new_values = list(values)
     new_values.sort()
     len_val = len(new_values)
-    
     index = int(len_val / 4)
     first = float(new_values[index])
     index = int(len_val / 4) * 3
