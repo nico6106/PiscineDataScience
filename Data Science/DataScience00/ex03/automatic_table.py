@@ -20,7 +20,7 @@ def time_decorator(func):
     return inner
 
 
-@time_decorator
+# @time_decorator
 def verif_file(folder, file) -> str:
     """verif file name + if exists and return path if correct"""
     path = folder + file
@@ -33,6 +33,7 @@ def verif_file(folder, file) -> str:
     return path
 
 
+# @time_decorator
 def is_table(cur, name) -> bool:
     """check if name is already a table in DB"""
     cur.execute("""
@@ -43,7 +44,7 @@ def is_table(cur, name) -> bool:
     data_tables = cur.fetchall()
     for elem in data_tables:
         if elem.count(name) != 0:
-            print(f"{name} already exists")
+            print(f"Table '{name}' already exists")
             return True
     return False
 
@@ -63,7 +64,7 @@ def create_table(cur, name: str):
     print('table created')
 
 
-@time_decorator
+# @time_decorator
 def insert_data(cur, path, name):
     """insert data to table"""
     data = pd.read_csv(path)
@@ -87,6 +88,7 @@ def insert_data(cur, path, name):
     print('data imported')
 
 
+@time_decorator
 def drop_table(cur, name):
     try:
         sql = f"""DROP TABLE {name};"""
@@ -98,7 +100,22 @@ def drop_table(cur, name):
         return
 
 
-def main(folder, file):
+@time_decorator
+def handle_file(cur, folder, file):
+    # verif path
+    path = verif_file(folder, file)
+    name = file.replace('.csv', '')
+    if is_table(cur, name) is False:
+        # create table
+        # create_table(cur, name)
+        # feed table with csv file
+        # folder_docker = '/data/customer/'
+        # path = folder_docker + file
+        insert_data(cur, path, name)
+    return
+
+
+def main(folder):
     """Main function of the program"""
     try:
         conn = psycopg2.connect(
@@ -110,17 +127,13 @@ def main(folder, file):
         conn.autocommit = True
         cur = conn.cursor()
 
-        drop_table(cur, 'data_2022_oct')
-
-        if is_table(cur, 'data_2022_oct') is False:
-            # verif path
-            path = verif_file(folder, file)
-            # create table
-            # create_table(cur, 'data_2022_oct')
-            # feed table with csv file
-            # folder_docker = '/data/customer/'
-            # path = folder_docker + file
-            insert_data(cur, path, 'data_2022_oct')
+        # drop_table(cur, 'data_2022_oct')
+        err = 0
+        for file in os.listdir(folder):
+            try:
+                handle_file(cur, folder, file)
+            except (Exception, psycopg2.DatabaseError):
+                err = err + 1
 
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -136,5 +149,4 @@ def main(folder, file):
 if __name__ == "__main__":
     folder = '/mnt/nfs/homes/nlesage/sgoinfre/\
 nlesage/DataScience/subject/customer/'
-    file = 'data_2022_oct.csv'
-    main(folder, file)
+    main(folder)

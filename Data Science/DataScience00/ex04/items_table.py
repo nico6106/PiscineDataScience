@@ -20,7 +20,7 @@ def time_decorator(func):
     return inner
 
 
-@time_decorator
+# @time_decorator
 def verif_file(folder, file) -> str:
     """verif file name + if exists and return path if correct"""
     path = folder + file
@@ -33,6 +33,7 @@ def verif_file(folder, file) -> str:
     return path
 
 
+# @time_decorator
 def is_table(cur, name) -> bool:
     """check if name is already a table in DB"""
     cur.execute("""
@@ -43,7 +44,7 @@ def is_table(cur, name) -> bool:
     data_tables = cur.fetchall()
     for elem in data_tables:
         if elem.count(name) != 0:
-            print(f"{name} already exists")
+            print(f"Table '{name}' already exists")
             return True
     return False
 
@@ -52,33 +53,30 @@ def is_table(cur, name) -> bool:
 def create_table(cur, name: str):
     """create a table"""
     sql = f"""CREATE TABLE {name} (
-    event_time timestamp NOT NULL,
-    event_type VARCHAR(255),
     product_id int,
-    price float,
-    user_id int,
-    user_session uuid
+    category_id int,
+    category_code text,
+    brand text
 );"""
     cur.execute(sql)
     print('table created')
 
 
-@time_decorator
+# @time_decorator
 def insert_data(cur, path, name):
     """insert data to table"""
     data = pd.read_csv(path)
-    # sql = f"""COPY {name}(event_time,event_type,product_id,
-    # price,user_id, user_session)
-    # FROM '{data}'
+    # sql = f"""COPY {name}(product_id,category_id,category_code,brand)
+    # FROM '{path}'
     # DELIMITER ','
     # CSV HEADER;"""
+    # print(sql)
+    # cur.execute(sql)
     data_type = {
-        "event_time": types.DateTime(),
-        "event_type": types.String(),
-        "product_id": types.Integer(),
-        "price": types.Float(),
-        "user_id": types.BigInteger(),
-        "user_session": types.Uuid(as_uuid=True),
+        "product_id	": types.Integer(),
+        "category_id": types.BigInteger(),
+        "category_code": types.String(),
+        "brand": types.String(),
     }
     engine = create_engine("postgresql://nlesage:mysecretpassword\
 @localhost/piscineds")
@@ -87,6 +85,7 @@ def insert_data(cur, path, name):
     print('data imported')
 
 
+@time_decorator
 def drop_table(cur, name):
     try:
         sql = f"""DROP TABLE {name};"""
@@ -96,6 +95,22 @@ def drop_table(cur, name):
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
         return
+
+
+@time_decorator
+def handle_file(cur, folder, file):
+    # verif path
+    path = verif_file(folder, file)
+    name = file.replace('.csv', '')
+    if is_table(cur, name) is False:
+        # create table
+        # create_table(cur, name)
+        # feed table with csv file
+        # folder_docker = '/data/item/'
+        # path = folder_docker + file
+        # print(f'before insert data path={path}')
+        insert_data(cur, path, name)
+    return
 
 
 def main(folder, file):
@@ -109,18 +124,9 @@ def main(folder, file):
         print('Connected to DB')
         conn.autocommit = True
         cur = conn.cursor()
+        drop_table(cur, 'item')
 
-        drop_table(cur, 'data_2022_oct')
-
-        if is_table(cur, 'data_2022_oct') is False:
-            # verif path
-            path = verif_file(folder, file)
-            # create table
-            # create_table(cur, 'data_2022_oct')
-            # feed table with csv file
-            # folder_docker = '/data/customer/'
-            # path = folder_docker + file
-            insert_data(cur, path, 'data_2022_oct')
+        handle_file(cur, folder, file)
 
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
@@ -135,6 +141,6 @@ def main(folder, file):
 
 if __name__ == "__main__":
     folder = '/mnt/nfs/homes/nlesage/sgoinfre/\
-nlesage/DataScience/subject/customer/'
-    file = 'data_2022_oct.csv'
+nlesage/DataScience/subject/item/'
+    file = 'item.csv'
     main(folder, file)
