@@ -5,11 +5,12 @@ def ft_filter(function, values):
     new_values = []
     if function is None:
         return values
+    new_values = [val for val in values if function(val)]
+    return new_values
+
     # for val in values:
     #     if function(val):
     #         new_values.append(val)
-    new_values = [val for val in values if function(val)]
-    return new_values
 
 
 # def myFunc(x):

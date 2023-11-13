@@ -54,7 +54,7 @@ def create_table(cur, name: str):
     """create a table"""
     sql = f"""CREATE TABLE {name} (
     product_id int,
-    category_id int,
+    category_id bigint,
     category_code text,
     brand text
 );"""
@@ -65,23 +65,23 @@ def create_table(cur, name: str):
 # @time_decorator
 def insert_data(cur, path, name):
     """insert data to table"""
-    data = pd.read_csv(path)
-    # sql = f"""COPY {name}(product_id,category_id,category_code,brand)
-    # FROM '{path}'
-    # DELIMITER ','
-    # CSV HEADER;"""
-    # print(sql)
-    # cur.execute(sql)
-    data_type = {
-        "product_id	": types.Integer(),
-        "category_id": types.BigInteger(),
-        "category_code": types.String(),
-        "brand": types.String(),
-    }
-    engine = create_engine("postgresql://nlesage:mysecretpassword\
-@localhost/piscineds")
-    data.to_sql(name, engine, index=False, if_exists='replace',
-                dtype=data_type)
+    # data = pd.read_csv(path)
+    sql = f"""COPY {name}(product_id,category_id,category_code,brand)
+    FROM '{path}'
+    DELIMITER ','
+    CSV HEADER;"""
+    print(sql)
+    cur.execute(sql)
+#     data_type = {
+#         "product_id	": types.Integer(),
+#         "category_id": types.BigInteger(),
+#         "category_code": types.String(),
+#         "brand": types.String(),
+#     }
+#     engine = create_engine("postgresql://nlesage:mysecretpassword\
+# @localhost/piscineds")
+#     data.to_sql(name, engine, index=False, if_exists='replace',
+#                 dtype=data_type)
     print('data imported')
 
 
@@ -104,10 +104,10 @@ def handle_file(cur, folder, file):
     name = file.replace('.csv', '')
     if is_table(cur, name) is False:
         # create table
-        # create_table(cur, name)
+        create_table(cur, name)
         # feed table with csv file
-        # folder_docker = '/data/item/'
-        # path = folder_docker + file
+        folder_docker = '/tmp/'
+        path = folder_docker + file
         # print(f'before insert data path={path}')
         insert_data(cur, path, name)
     return

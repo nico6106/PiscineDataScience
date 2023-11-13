@@ -56,7 +56,7 @@ def create_table(cur, name: str):
     event_type VARCHAR(255),
     product_id int,
     price float,
-    user_id int,
+    user_id bigint,
     user_session uuid
 );"""
     cur.execute(sql)
@@ -66,24 +66,25 @@ def create_table(cur, name: str):
 @time_decorator
 def insert_data(cur, path, name):
     """insert data to table"""
-    data = pd.read_csv(path)
-    # sql = f"""COPY {name}(event_time,event_type,product_id,
-    # price,user_id, user_session)
-    # FROM '{data}'
-    # DELIMITER ','
-    # CSV HEADER;"""
-    data_type = {
-        "event_time": types.DateTime(),
-        "event_type": types.String(),
-        "product_id": types.Integer(),
-        "price": types.Float(),
-        "user_id": types.BigInteger(),
-        "user_session": types.Uuid(as_uuid=True),
-    }
-    engine = create_engine("postgresql://nlesage:mysecretpassword\
-@localhost/piscineds")
-    data.to_sql(name, engine, index=False, if_exists='replace',
-                dtype=data_type)
+    # data = pd.read_csv(path)
+    sql = f"""COPY {name}(event_time,event_type,product_id,
+    price,user_id, user_session)
+    FROM '{path}'
+    DELIMITER ','
+    CSV HEADER;"""
+    cur.execute(sql)
+#     data_type = {
+#         "event_time": types.DateTime(),
+#         "event_type": types.String(),
+#         "product_id": types.Integer(),
+#         "price": types.Float(),
+#         "user_id": types.BigInteger(),
+#         "user_session": types.Uuid(as_uuid=True),
+#     }
+#     engine = create_engine("postgresql://nlesage:mysecretpassword\
+# @localhost/piscineds")
+#     data.to_sql(name, engine, index=False, if_exists='replace',
+#                 dtype=data_type)
     print('data imported')
 
 
@@ -110,16 +111,16 @@ def main(folder, file):
         conn.autocommit = True
         cur = conn.cursor()
 
-        drop_table(cur, 'data_2022_oct')
+        # drop_table(cur, 'data_2022_oct')
 
         if is_table(cur, 'data_2022_oct') is False:
             # verif path
             path = verif_file(folder, file)
             # create table
-            # create_table(cur, 'data_2022_oct')
+            create_table(cur, 'data_2022_oct')
             # feed table with csv file
-            # folder_docker = '/data/customer/'
-            # path = folder_docker + file
+            folder_docker = '/tmp/'
+            path = folder_docker + file
             insert_data(cur, path, 'data_2022_oct')
 
         cur.close()

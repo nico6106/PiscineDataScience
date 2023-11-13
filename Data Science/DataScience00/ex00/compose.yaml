@@ -18,8 +18,8 @@ services:
       - datascience
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ../:/exos
-      - /mnt/nfs/homes/nlesage/sgoinfre/nlesage/DataScience/subject:/data
+      # - ../:/exos
+      # - /mnt/nfs/homes/nlesage/sgoinfre/nlesage/DataScience/subject:/data
     init: true
 
   pgadmin:
