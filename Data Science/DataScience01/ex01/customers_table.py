@@ -18,6 +18,7 @@ def time_decorator(func):
 
 
 def drop_table(cur, name):
+    """delete table"""
     try:
         sql = f"""DROP TABLE {name};"""
         print(f'cmd=\'{sql}\'')
@@ -58,6 +59,7 @@ def create_table(cur, name: str):
 
 
 def get_all_data_table_names(cur):
+    """get all names of tables that we need to join to customers"""
     cur.execute("""
         SELECT table_name
         FROM information_schema.tables
@@ -72,6 +74,7 @@ def get_all_data_table_names(cur):
 
 
 def join_data(cur):
+    """join all tab into customers"""
     tab_names = get_all_data_table_names(cur)
     print(tab_names)
     name = 'data_2022_oct'
@@ -94,7 +97,7 @@ def main():
         print('Connected to DB')
         conn.autocommit = True
         cur = conn.cursor()
-        # drop_table(cur, 'customers')
+        drop_table(cur, 'customers')
         if is_table(cur, 'customers') is False:
             create_table(cur, 'customers')
             join_data(cur)
@@ -112,3 +115,11 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# oct	4102283
+# nov	4635837
+# dec	3533286
+# jan	4264752
+# feb	4156682
+	
+# tot	20692840
