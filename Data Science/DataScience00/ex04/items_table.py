@@ -1,9 +1,9 @@
 import psycopg2
 import os
-import pandas as pd
+# import pandas as pd
 from time import time
 from typing import Any
-from sqlalchemy import create_engine, types
+# from sqlalchemy import create_engine, types
 
 
 def time_decorator(func):
@@ -124,7 +124,7 @@ def main(folder, file):
         print('Connected to DB')
         conn.autocommit = True
         cur = conn.cursor()
-        drop_table(cur, 'item')
+        # drop_table(cur, 'item')
 
         handle_file(cur, folder, file)
 
