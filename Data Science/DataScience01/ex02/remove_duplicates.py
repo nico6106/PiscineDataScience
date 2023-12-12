@@ -133,11 +133,11 @@ def main():
         cur = conn.cursor()
         # drop_table(cur, 'customers')
         if is_table(cur, 'customers') is True:
-            duplicates = select_duplicates(cur, 'customers')
-            print(f"duplicates:")
-            print(f"len={len(duplicates)}")
-            print(f"type{type(duplicates)}")
-            print_x_rows(duplicates, 10)
+            # duplicates = select_duplicates(cur, 'customers')
+            # print(f"duplicates:")
+            # print(f"len={len(duplicates)}")
+            # print(f"type{type(duplicates)}")
+            # print_x_rows(duplicates, 10)
             
             delete_duplicates(cur, 'customers')
         
@@ -162,3 +162,6 @@ if __name__ == "__main__":
 # feb	4156682
 	
 # tot	20692840
+
+
+#nb to have 18 525 251
