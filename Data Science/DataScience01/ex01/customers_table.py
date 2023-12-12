@@ -97,7 +97,7 @@ def main():
         print('Connected to DB')
         conn.autocommit = True
         cur = conn.cursor()
-        drop_table(cur, 'customers')
+        # drop_table(cur, 'customers')
         if is_table(cur, 'customers') is False:
             create_table(cur, 'customers')
             join_data(cur)
