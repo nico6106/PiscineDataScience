@@ -67,7 +67,7 @@ def is_table(cur, name) -> bool:
 
 # DROP TABLE IF EXISTS _temp;
 
-def delete_duplicates_bis(cur, name):
+def delete_duplicates(cur, name):
     # delete temporary table if exists
     sql = """DROP TABLE IF EXISTS _temp;"""
     cur.execute(sql)
