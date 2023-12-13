@@ -42,7 +42,73 @@ def is_table(cur, name) -> bool:
             return True
     return False
 
-def delete_duplicates(cur, name):
+# DROP TABLE IF EXISTS _temp;
+
+# CREATE TEMPORARY TABLE _temp AS SELECT * FROM customers
+
+# DELETE FROM _temp
+# WHERE ctid IN (
+# SELECT ctid FROM (
+# SELECT ctid, ROW_NUMBER() OVER(
+#     PARTITION BY date_trunc('minute', event_time),
+#     event_type,
+#     product_id,
+#     price,
+#     user_id,
+#     user_session ORDER BY event_time DESC)
+#     AS row_num FROM customers ) AS duplicates
+# WHERE duplicates.row_num > 1
+# );
+
+# DROP TABLE IF EXISTS customers
+
+# CREATE TABLE customers AS SELECT *
+#         FROM _temp ORDER BY event_time
+
+# DROP TABLE IF EXISTS _temp;
+
+def delete_duplicates_bis(cur, name):
+    # delete temporary table if exists
+    sql = """DROP TABLE IF EXISTS _temp;"""
+    cur.execute(sql)
+    
+	# create temporary table _temp that will contains all customers datas
+    sql = """CREATE TEMPORARY TABLE _temp AS SELECT * FROM customers"""
+    cur.execute(sql)
+    
+	# from the temporary table, delete all duplicates rows.
+	# we use ctid to have the unique identifier of the row
+	# PARTITION : fonction ROW_NUMBER() attribuera des numéros de ligne pour chaque groupe de lignes
+	# (SELECT ctid, ROW_NUMBER() OVER(...) AS row_num FROM customers) AS duplicates: 
+	# 	fonction ROW_NUMBER() attribue numéro de ligne à chaque groupe de lignes en double,
+	# 	où le regroupement est défini par les colonnes spécifiées dans la clause PARTITION BY.
+    sql = """DELETE FROM _temp
+WHERE ctid IN (
+SELECT ctid FROM (
+SELECT ctid, ROW_NUMBER() OVER(
+    PARTITION BY date_trunc('minute', event_time),
+    event_type,
+    product_id,
+    price,
+    user_id,
+    user_session ORDER BY event_time DESC)
+    AS row_num FROM customers ) AS duplicates
+WHERE duplicates.row_num > 1
+);"""
+    cur.execute(sql)
+    
+    sql = """DROP TABLE IF EXISTS customers"""
+    cur.execute(sql)
+    
+    sql = """CREATE TABLE customers AS SELECT *
+        FROM _temp ORDER BY event_time"""
+    cur.execute(sql)
+    
+    sql = """DROP TABLE IF EXISTS _temp"""
+    cur.execute(sql)
+    return
+
+def delete_duplicates_init(cur, name):
     """delete duplicates"""
     sql = f"""
 DELETE FROM {name} t1
