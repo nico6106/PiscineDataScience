@@ -94,18 +94,19 @@ def graph_nb_cust(cur):
 
 def graph_total_sales(cur):
     """function that imports data needed"""
-    cur.execute("""SELECT event_time, price, user_id FROM customers WHERE event_type = 'purchase'""")
+    cur.execute("""SELECT event_time, price FROM customers_clean WHERE event_type = 'purchase'""")
     datas = cur.fetchall()
 
     custs = pd.DataFrame(datas)
     custs = custs.rename(columns={0: 'event_time'})
     custs = custs.rename(columns={1: 'price'})
-    custs = custs.rename(columns={2: 'user_id'})
 
     custs['event_time']  = custs['event_time'].dt.date
-    
     info = custs.groupby('event_time').sum()
-    print(info)
+    
+    somme_par_mois = info.groupby([lambda x: x.month])['price'].sum()
+
+    print(somme_par_mois)
     return
 
 
