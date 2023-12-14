@@ -51,6 +51,7 @@ def left_join_tables(cur, name):
 # ADD COLUMN brand text"""
 #     cur.execute(sql)
     
+	# creer table cust bis
     sql = """CREATE TABLE customers_bis (
     event_time timestamp NOT NULL,
     event_type VARCHAR(255),
@@ -62,13 +63,47 @@ def left_join_tables(cur, name):
     category_code text,
     brand text);"""
     cur.execute(sql)
-
+    
+	#creer table item_bis pour supprimer les doublons
+    sql = """CREATE TABLE item_bis(
+product_id int,
+category_id bigint,
+category_code text,
+brand text
+)"""
+    cur.execute(sql)
+    
+	# inserer que les valeurs uniques "completes" dans la table item_bis
+    sql = """INSERT INTO item_bis (product_id, category_id, category_code, brand)
+SELECT
+    "product_id",
+    MAX("category_id") AS "category_id",
+    MAX("category_code") AS "category_code",
+    MAX("brand") AS "brand"
+FROM
+    item
+GROUP BY
+    "product_id";"""
+    cur.execute(sql)
+    
     # delete temporary table if exists
     sql = """INSERT INTO customers_bis
 SELECT customers.event_time, customers.event_type, customers.product_id, customers.price, customers.user_id, customers.user_session, 
-    item.category_id, item.category_code, item.brand
+    item_bis.category_id, item_bis.category_code, item_bis.brand
 FROM customers
-LEFT JOIN item ON customers.product_id = item.product_id;"""
+LEFT JOIN item_bis ON customers.product_id = item_bis.product_id;"""
+    cur.execute(sql)
+    
+	# supprimer table customers initiale
+    sql = """DROP TABLE customers"""
+    cur.execute(sql)
+    
+	# supprimer table item_bis
+    sql = """DROP TABLE item_bis"""
+    cur.execute(sql)
+    
+	# renommer cutomers_bis en customers
+    sql = """ALTER TABLE customers_bis RENAME TO customers;"""
     cur.execute(sql)
     print("left join executed")
     print(sql)
@@ -115,3 +150,9 @@ if __name__ == "__main__":
 # SELECT customers.*, item.*
 # FROM customers
 # LEFT JOIN item ON customers.product_id = item.product_id;
+
+
+
+
+# INSERT INTO item_bis SELECT * FROM item
+
