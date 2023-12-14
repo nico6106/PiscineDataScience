@@ -67,21 +67,22 @@ def is_table(cur, name) -> bool:
 
 # DROP TABLE IF EXISTS _temp;
 
+
 def delete_duplicates(cur, name):
     # delete temporary table if exists
     sql = """DROP TABLE IF EXISTS _temp;"""
     cur.execute(sql)
-    
-	# create temporary table _temp that will contains all customers datas
+
+    # create temporary table _temp that will contains all customers datas
     sql = """CREATE TEMPORARY TABLE _temp AS SELECT * FROM customers"""
     cur.execute(sql)
-    
-	# from the temporary table, delete all duplicates rows.
-	# we use ctid to have the unique identifier of the row
-	# PARTITION : fonction ROW_NUMBER() attribuera des numéros de ligne pour chaque groupe de lignes
-	# (SELECT ctid, ROW_NUMBER() OVER(...) AS row_num FROM customers) AS duplicates: 
-	# 	fonction ROW_NUMBER() attribue numéro de ligne à chaque groupe de lignes en double,
-	# 	où le regroupement est défini par les colonnes spécifiées dans la clause PARTITION BY.
+
+    # from the temporary table, delete all duplicates rows.
+    # we use ctid to have the unique identifier of the row
+    # PARTITION : fonction ROW_NUMBER() attribue num ligne pour chaque groupe
+    # (SELECT ctid, ROW_NUMBER() OVER(..) AS row_num FROM cust) AS duplicates:
+    # 	fonction ROW_NUMBER() attribue num ligne à chaque groupe en double,
+    # 	où groupe défini par colonnes spécifiées dans la clause PARTITION BY.
     sql = """DELETE FROM _temp
 WHERE ctid IN (
 SELECT ctid FROM (
@@ -96,24 +97,25 @@ SELECT ctid, ROW_NUMBER() OVER(
 WHERE duplicates.row_num > 1
 );"""
     cur.execute(sql)
-    
+
     sql = """DROP TABLE IF EXISTS customers"""
     cur.execute(sql)
-    
+
     sql = """CREATE TABLE customers AS SELECT *
         FROM _temp ORDER BY event_time"""
     cur.execute(sql)
-    
+
     sql = """DROP TABLE IF EXISTS _temp"""
     cur.execute(sql)
     return
+
 
 def delete_duplicates_init(cur, name):
     """delete duplicates"""
     sql = f"""
 DELETE FROM {name} t1
 USING {name} t2
-WHERE t1.event_time < t2.event_time 
+WHERE t1.event_time < t2.event_time
 OR (t1.event_time = t2.event_time
 AND t1.event_type = t2.event_type
 AND t1.product_id = t2.product_id
@@ -122,11 +124,6 @@ AND t1.user_id = t2.user_id
 AND t1.user_session = t2.user_session);
 """
 
-# event_type, product_id, price, user_id = user_id, user_session, COUNT (*) AS count
-# FROM {name} = name}
-# GROUP BY event_type, product_id, price, user_id, user_session
-# HAVING COUNT (*) > 1;
-# """
     print(sql)
     cur.execute(sql)
     res = cur.fetchone()[0]
@@ -136,7 +133,8 @@ AND t1.user_session = t2.user_session);
 
 def select_duplicates(cur, name):
     """select duplicates"""
-    sql = f"""SELECT event_type, product_id, price, user_id, user_session, COUNT (*) AS count
+    sql = f"""SELECT event_type, product_id, price, user_id, user_session,
+     COUNT (*) AS count
 FROM {name}
 GROUP BY event_type, product_id, price, user_id, user_session
 HAVING COUNT (*) > 1;
@@ -155,8 +153,8 @@ HAVING COUNT (*) > 1;
 #     AND   t1.user_id = t2.user_id
 #     AND   t1.user_session = t2.user_session )
 # """
-    
-#     SELECT * 
+
+# SELECT *
 # FROM {name} A
 # USING {name} B
 # WHERE A.event_type = B.event_type
@@ -185,6 +183,7 @@ def print_x_rows(data, nb_rows):
         print(f"{i} = {data[i]}")
         i = i + 1
 
+
 @time_decorator
 def main():
     """Main function of the program"""
@@ -204,9 +203,9 @@ def main():
             # print(f"len={len(duplicates)}")
             # print(f"type{type(duplicates)}")
             # print_x_rows(duplicates, 10)
-            
+
             delete_duplicates(cur, 'customers')
-        
+
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -226,8 +225,8 @@ if __name__ == "__main__":
 # dec	3533286
 # jan	4264752
 # feb	4156682
-	
+
 # tot	20692840
 
 
-#nb to have 18 525 251
+# nb to have 18 525 251

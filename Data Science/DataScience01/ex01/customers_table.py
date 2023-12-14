@@ -79,7 +79,8 @@ def join_data(cur):
     print(tab_names)
     name = 'data_2022_oct'
     for name in tab_names:
-        sql = f"""INSERT INTO customers (event_time,event_type,product_id,price,user_id,user_session)
+        sql = f"""INSERT INTO customers
+        (event_time,event_type,product_id,price,user_id,user_session)
 SELECT * FROM {name};"""
         cur.execute(sql)
     return
@@ -101,7 +102,7 @@ def main():
         if is_table(cur, 'customers') is False:
             create_table(cur, 'customers')
             join_data(cur)
-        
+
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -121,5 +122,5 @@ if __name__ == "__main__":
 # dec	3533286
 # jan	4264752
 # feb	4156682
-	
+
 # tot	20692840

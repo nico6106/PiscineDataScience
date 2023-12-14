@@ -45,13 +45,13 @@ def is_table(cur, name) -> bool:
 
 def left_join_tables(cur, name):
     """function that left join the datas"""
-#     sql = """ALTER TABLE customers 
+# sql = """ALTER TABLE customers
 # ADD COLUMN category_id bigint,
 # ADD COLUMN category_code text,
 # ADD COLUMN brand text"""
 #     cur.execute(sql)
-    
-	# creer table cust bis
+
+    # creer table cust bis
     sql = """CREATE TABLE customers_bis (
     event_time timestamp NOT NULL,
     event_type VARCHAR(255),
@@ -63,8 +63,8 @@ def left_join_tables(cur, name):
     category_code text,
     brand text);"""
     cur.execute(sql)
-    
-	#creer table item_bis pour supprimer les doublons
+
+    # creer table item_bis pour supprimer les doublons
     sql = """CREATE TABLE item_bis(
 product_id int,
 category_id bigint,
@@ -72,9 +72,10 @@ category_code text,
 brand text
 )"""
     cur.execute(sql)
-    
-	# inserer que les valeurs uniques "completes" dans la table item_bis
-    sql = """INSERT INTO item_bis (product_id, category_id, category_code, brand)
+
+    # inserer que les valeurs uniques "completes" dans la table item_bis
+    sql = """INSERT INTO item_bis (product_id, category_id,
+category_code, brand)
 SELECT
     "product_id",
     MAX("category_id") AS "category_id",
@@ -85,29 +86,31 @@ FROM
 GROUP BY
     "product_id";"""
     cur.execute(sql)
-    
+
     # delete temporary table if exists
     sql = """INSERT INTO customers_bis
-SELECT customers.event_time, customers.event_type, customers.product_id, customers.price, customers.user_id, customers.user_session, 
+SELECT customers.event_time, customers.event_type, customers.product_id,
+customers.price, customers.user_id, customers.user_session,
     item_bis.category_id, item_bis.category_code, item_bis.brand
 FROM customers
-LEFT JOIN item_bis ON customers.product_id = item_bis.product_id;"""
+LEFT JOIN item_bis ON customers.product_id = item_bis.product_id
+ORDER BY customers.event_time;
+;"""
     cur.execute(sql)
-    
-	# supprimer table customers initiale
+
+    # supprimer table customers initiale
     sql = """DROP TABLE customers"""
     cur.execute(sql)
-    
-	# supprimer table item_bis
+
+    # supprimer table item_bis
     sql = """DROP TABLE item_bis"""
     cur.execute(sql)
-    
-	# renommer cutomers_bis en customers
+
+    # renommer cutomers_bis en customers
     sql = """ALTER TABLE customers_bis RENAME TO customers;"""
     cur.execute(sql)
     print("left join executed")
     print(sql)
-            
     return
 
 
@@ -126,7 +129,7 @@ def main():
         # drop_table(cur, 'customers')
         if is_table(cur, 'customers') is True:
             left_join_tables(cur, 'customers')
-        
+
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -142,7 +145,7 @@ if __name__ == "__main__":
     main()
 
 
-# ALTER TABLE customers 
+# ALTER TABLE customers
 # ADD COLUMN category_id bigint,
 # ADD COLUMN category_code text,
 # ADD COLUMN brand text
@@ -151,8 +154,4 @@ if __name__ == "__main__":
 # FROM customers
 # LEFT JOIN item ON customers.product_id = item.product_id;
 
-
-
-
 # INSERT INTO item_bis SELECT * FROM item
-
