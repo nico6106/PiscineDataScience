@@ -71,21 +71,23 @@ def show_boxplot_prices(data):
 
 
 def show_avg_boxplt(cur):
-    cur.execute("""select AVG(price), user_id, user_session
-from customers_clean
-where event_type = 'purchase'
-group by user_id, user_session
+    cur.execute("""select avg(subquery.total_sum), user_id from (
+	select sum(price) as total_sum, user_id, user_session
+	from customers_clean
+	where event_type = 'purchase'
+	group by user_id, user_session
+) as subquery
+group by user_id
 """)
     datas = cur.fetchall()
     data = pd.DataFrame(datas)
     data_avg = data[0]
 
-    print(data_avg.describe())
+    # print(data_avg.describe())
 
-    # print(data_avg)
     plt.boxplot(data_avg, vert=False)
     plt.xlabel('price')
-    # plt.xlim(0, 13)
+    plt.xlim(0, 70)
     plt.show()
     return
 
