@@ -6,6 +6,8 @@ import matplotlib.ticker as ticker
 from collections import defaultdict
 import matplotlib.dates as mdates
 import pandas as pd
+from datetime import date
+
 
 
 def time_decorator(func):
@@ -133,7 +135,6 @@ def average_spent(cur):
 FROM customers_clean
 WHERE event_type = 'purchase'
 GROUP BY purchase_date;
-
 """)
     datas = cur.fetchall()
     # print(datas)
@@ -145,12 +146,15 @@ GROUP BY purchase_date;
         # print(elem)
         # print(f"date={elem[0]}, avg={elem[3]}")
         # break
+    print(tab_dates)
 
-    plt.plot(tab_avg)
-    plt.ylabel('Number of customers')
+    plt.plot(tab_dates, tab_avg)
+    plt.ylabel('average spend/customers in A')
+    plt.ylim(0, max(tab_avg) + 1)
+
         
-    # formatter = mdates.DateFormatter('%b')
-    # plt.gca().xaxis.set_major_formatter(formatter)
+    formatter = mdates.DateFormatter('%b')
+    plt.gca().xaxis.set_major_formatter(formatter)
     plt.show()
 
     # columns = ['purchase_date', 'nb_clients', 'total_price', 'avg']
@@ -241,7 +245,7 @@ def main():
         # drop_table(cur, 'customers')
         if is_table(cur, 'customers') is True:
             # graph_nb_cust(cur)
-            # graph_total_sales(cur)
+            graph_total_sales(cur)
             average_spent(cur)
 
         cur.close()
