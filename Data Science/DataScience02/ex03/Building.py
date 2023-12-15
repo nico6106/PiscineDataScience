@@ -56,11 +56,18 @@ group by user_id
         else: tab_y[4] = tab_y[4] + 1
 
     # print(data_avg.describe())
-
-    plt.bar(tab_x, tab_y)
+    plt.hist(data, bins=5, edgecolor='k')
+    # plt.ylabel('customers')
     plt.xlabel('frequency')
-    plt.ylabel('customers')
+    plt.xticks(range(0, 39, 10))
+    plt.ylim(0, 60000)
+
     plt.show()
+
+    # plt.bar(tab_x, tab_y)
+    # plt.xlabel('frequency')
+    # plt.ylabel('customers')
+    # plt.show()
     return
 
 
