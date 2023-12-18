@@ -43,31 +43,18 @@ where event_type = 'purchase'
 group by user_id
 """)
     datas = cur.fetchall()
-    data = pd.DataFrame(datas)
-    data = data[0]
-    
-    tab_y = [0, 0, 0, 0, 0]
-    tab_x = ['[0-10[', '[10-20[', '[20-30[', '[30-40[', '40+']
-    for elem in data:
-        if elem <= 9: tab_y[0] = tab_y[0] + 1
-        elif elem <= 19: tab_y[1] = tab_y[1] + 1
-        elif elem <= 29: tab_y[2] = tab_y[2] + 1
-        elif elem <= 39: tab_y[3] = tab_y[3] + 1
-        else: tab_y[4] = tab_y[4] + 1
+    # data = pd.DataFrame(datas)
+    # data = data[0]
+    frequency = []
+    for elem in datas:
+        if (elem[0] < 40): frequency.append(elem[0])
 
-    # print(data_avg.describe())
-    plt.hist(data, bins=5, edgecolor='k')
-    # plt.ylabel('customers')
+    plt.hist(frequency, bins=5, edgecolor='k')
+    plt.ylabel('customers')
     plt.xlabel('frequency')
     plt.xticks(range(0, 39, 10))
-    plt.ylim(0, 60000)
-
+    plt.ylim(0, 80000)
     plt.show()
-
-    # plt.bar(tab_x, tab_y)
-    # plt.xlabel('frequency')
-    # plt.ylabel('customers')
-    # plt.show()
     return
 
 
@@ -78,24 +65,35 @@ where event_type = 'purchase'
 group by user_id;
 """)
     datas = cur.fetchall()
-    data = pd.DataFrame(datas)
-    data = data[0]
-    
-    tab_y = [0, 0, 0, 0, 0]
-    tab_x = ['[0-20[', '[20-50[', '[50-100[', '[100-200[', '200+']
-    for elem in data:
-        if elem < 20: tab_y[0] = tab_y[0] + 1
-        elif elem < 50: tab_y[1] = tab_y[1] + 1
-        elif elem < 100: tab_y[2] = tab_y[2] + 1
-        elif elem < 200: tab_y[3] = tab_y[3] + 1
-        else: tab_y[4] = tab_y[4] + 1
+    frequency = []
+    for elem in datas:
+        if (elem[0] < 200): frequency.append(elem[0])
 
-    # print(data_avg.describe())
-
-    plt.bar(tab_x, tab_y)
-    plt.xlabel('monetary value in A')
-    plt.ylabel('customers')
+    plt.hist(frequency, bins=5, edgecolor='k')
+    plt.ylabel('monetary value in A')
+    plt.xlabel('customers')
+    plt.xticks(range(0, 200, 50))
     plt.show()
+    
+
+    # data = pd.DataFrame(datas)
+    # data = data[0]
+    
+    # tab_y = [0, 0, 0, 0, 0]
+    # tab_x = ['0', '50', '100', '150', '200']
+    # for elem in data:
+    #     if elem < 20: tab_y[0] = tab_y[0] + 1
+    #     elif elem < 50: tab_y[1] = tab_y[1] + 1
+    #     elif elem < 70: tab_y[2] = tab_y[2] + 1
+    #     elif elem < 80: tab_y[3] = tab_y[3] + 1
+    #     elif elem < 85: tab_y[4] = tab_y[4] + 1
+
+    # # print(data_avg.describe())
+
+    # plt.bar(tab_x, tab_y)
+    # plt.xlabel('monetary value in A')
+    # plt.ylabel('customers')
+    # plt.show()
     return
 
 @time_decorator
@@ -111,7 +109,7 @@ def main():
         conn.autocommit = True
         cur = conn.cursor()
         if is_table(cur, 'customers') is True:
-            nb_order_frequency(cur)
+            # nb_order_frequency(cur)
             spent_by_cust(cur)
 
         cur.close()
