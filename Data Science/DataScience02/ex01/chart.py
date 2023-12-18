@@ -97,7 +97,7 @@ def graph_nb_cust(cur):
 def graph_total_sales(cur):
     """function that imports data needed"""
     dic_month = {10: "Oct", 11: "Nov", 12: "Dec", 1: "Jan", 2: "Feb"}
-    cur.execute("""SELECT event_time, price FROM customers_clean WHERE event_type = 'purchase'""")
+    cur.execute("""SELECT event_time, price FROM customers WHERE event_type = 'purchase'""")
     datas = cur.fetchall()
 
     columns = ['event_time', 'price']
@@ -116,7 +116,7 @@ def graph_total_sales(cur):
     for (year, month), elem in sum_per_month.items():
         tab_month.append(dic_month[month])
         tab_sum.append(elem)
-    print(f"month={tab_month}, sum={tab_sum}")
+    # print(f"month={tab_month}, sum={tab_sum}")
     plt.bar(tab_month, tab_sum)
     plt.xlabel('month')
     plt.ylabel('total in sales in millions of A')
@@ -132,7 +132,7 @@ def average_spent(cur):
 	count(DISTINCT user_id) AS nb_clients,
 	SUM(price) AS total_price,
 	SUM(price) / count(DISTINCT user_id) as avg
-FROM customers_clean
+FROM customers
 WHERE event_type = 'purchase'
 GROUP BY purchase_date;
 """)
@@ -146,7 +146,7 @@ GROUP BY purchase_date;
         # print(elem)
         # print(f"date={elem[0]}, avg={elem[3]}")
         # break
-    print(tab_dates)
+    # print(tab_dates)
 
     plt.plot(tab_dates, tab_avg)
     plt.ylabel('average spend/customers in A')
@@ -244,7 +244,7 @@ def main():
         cur = conn.cursor()
         # drop_table(cur, 'customers')
         if is_table(cur, 'customers') is True:
-            # graph_nb_cust(cur)
+            graph_nb_cust(cur)
             graph_total_sales(cur)
             average_spent(cur)
 
