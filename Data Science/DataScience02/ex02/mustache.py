@@ -39,7 +39,7 @@ def is_table(cur, name) -> bool:
 def extract_print_data(cur):
     """function that show average spent/customers"""
     cur.execute("""select price
-from customers_clean
+from customers
 where event_type = 'purchase' ;
 """)
     datas = cur.fetchall()
@@ -73,7 +73,7 @@ def show_boxplot_prices(data):
 def show_avg_boxplt(cur):
     cur.execute("""select avg(subquery.total_sum), user_id from (
 	select sum(price) as total_sum, user_id, user_session
-	from customers_clean
+	from customers
 	where event_type = 'purchase'
 	group by user_id, user_session
 ) as subquery
@@ -83,7 +83,7 @@ group by user_id
     data = pd.DataFrame(datas)
     data_avg = data[0]
 
-    # print(data_avg.describe())
+    print(data_avg.describe())
 
     plt.boxplot(data_avg, vert=False)
     plt.xlabel('price')
@@ -105,7 +105,7 @@ def main():
         conn.autocommit = True
         cur = conn.cursor()
         if is_table(cur, 'customers') is True:
-            data = extract_print_data(cur)
+            # data = extract_print_data(cur)
             # show_boxplot_prices(data)
             show_avg_boxplt(cur)
 

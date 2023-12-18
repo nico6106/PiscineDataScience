@@ -38,7 +38,7 @@ def is_table(cur, name) -> bool:
 
 def nb_order_frequency(cur):
     cur.execute("""select count(user_session), user_id
-from customers_clean
+from customers
 where event_type = 'purchase'
 group by user_id
 """)
@@ -73,7 +73,7 @@ group by user_id
 
 def spent_by_cust(cur):
     cur.execute("""select sum(price), user_id
-from customers_clean
+from customers
 where event_type = 'purchase'
 group by user_id;
 """)
